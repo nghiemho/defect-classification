@@ -28,13 +28,13 @@ train_datagen = ImageDataGenerator(rescale = 1./255,
 
 test_datagen = ImageDataGenerator(rescale = 1./255)
 
-training_set = train_datagen.flow_from_directory('/content/gdrive/My Drive/Python/Lasor-dataset/Training-set',
+training_set = train_datagen.flow_from_directory('path to train data',
                                                  target_size = (192, 192),
                                                  batch_size = 5,
                                                  color_mode = 'grayscale',
                                                  class_mode = 'categorical')
 
-test_set = test_datagen.flow_from_directory('/content/gdrive/My Drive/Python/Lasor-dataset/Test-set',
+test_set = test_datagen.flow_from_directory('path to test data',
                                             target_size = (192, 192),
                                             batch_size = 5,
                                             color_mode = 'grayscale',
