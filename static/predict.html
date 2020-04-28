@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Defect Prediction</title>
+</head>
+<body>
+	<input id = 'image-selector' type="file">
+	<button id = 'predict-button' >Predict</button>
+	<p style="font-weight: bold">Prediction(threshold: 75%)</p>
+	<p style="font-weight: bold">Model accuracy: 78%</p>
+	<p>Dark Spot: <span id="DarkSpot-prediction"></span></p>
+	<p>Fold Strip: <span id="FoldStrip-prediction"></span></p>
+	<p>Gel: <span id="Gel-prediction"></span></p>
+	<p>Lump: <span id="Lump-prediction"></span></p>
+	<p>Streak: <span id="Streak-prediction"></span></p>
+	<p>Wrinkle: <span id="Wrinkle-prediction"></span></p>
+	<img id = 'selected-image'src=""/>
+	<p><span id="prediction"></span></p>
+	<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script>
+		let base46Image;
+		$('#image-selector').change(function(){
+			let reader = new FileReader();
+			reader.onload = function(e){
+				let dataURL = reader.result;
+				$('#selected-image').attr('src',dataURL);
+				base46Image = dataURL.replace('data:image/bmp;base64,','');
+				console.log(base46Image);
+			}
+			reader.readAsDataURL($('#image-selector')[0].files[0]);
+			$('#DarkSpot-prediction').text('');
+			$('#FoldStrip-prediction').text('');
+			$('#Gel-prediction').text('');
+			$('#Lump-prediction').text('');
+			$('#Streak-prediction').text('');
+			$('#Wrinkle-prediction').text('');
+			$('#prediction').text('');
+		});
+
+		$('#predict-button').click(function(event){
+			let message = {
+				image: base46Image
+			}
+			console.log(message);
+			$.post('http://127.0.0.1:5000/predict',JSON.stringify(message), function(response){
+				$('#DarkSpot-prediction').text(response.prediction.DarkSpot.toFixed(2));
+				$('#FoldStrip-prediction').text(response.prediction.Foldstrip.toFixed(2));
+				$('#Gel-prediction').text(response.prediction.Gels.toFixed(2));
+				$('#Lump-prediction').text(response.prediction.Lumps.toFixed(2));
+				$('#Streak-prediction').text(response.prediction.Streak.toFixed(2));
+				$('#Wrinkle-prediction').text(response.prediction.Wrinkle.toFixed(2));
+				$('#prediction').text(response.prediction.result);
+				console.log(response)
+			});
+		});
+	</script>
+</body>
+</html>
