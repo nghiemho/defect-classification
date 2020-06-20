@@ -10,11 +10,14 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 import numpy as np
+from tensorflow.python.keras.backend import set_session
+#import tensorflow.compat.v1 as tf
 import tensorflow as tf
 
 app = Flask(__name__)
 app.debug = True
 def get_model():
+	set_session(sess)
 	global model
 	model = load_model('new-model.h5')
 	print(' * Model is loaded!')
@@ -37,13 +40,14 @@ def predict_class(predict):
 	return text
 
 print(' * Loading Keras model...')
-get_model()
 graph = tf.get_default_graph()
+sess = tf.Session()
+get_model()
 @app.route('/predict', methods = ['POST'])
 def predict():
-	global graph
+	global graph, sess
 	with graph.as_default():
-
+		set_session(sess)
 		message = request.get_json(force = True)
 		encoded = message['image']
 		decoded = base64.b64decode(encoded)
@@ -61,7 +65,7 @@ def predict():
 				'Streak': prediction[0][4]*100.,
 				'Wrinkle': prediction[0][5]*100.,
 				'result' : result
+				}
 			}
-		}
 		return jsonify(response)
 app.run()
